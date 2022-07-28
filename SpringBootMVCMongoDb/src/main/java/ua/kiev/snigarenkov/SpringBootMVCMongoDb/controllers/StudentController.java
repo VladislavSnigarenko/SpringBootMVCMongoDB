@@ -18,7 +18,7 @@ import ua.kiev.snigarenkov.SpringBootMVCMongoDb.services.StudentService;
 @Controller
 public class StudentController {
 
-    static int ITEMS_PER_PAGE = 6;
+    static final int ITEMS_PER_PAGE = 6; // так же лучше использовать spring @Value в такиз случаях
 
 	@Autowired
 	StudentService studentService;	
@@ -45,7 +45,7 @@ public class StudentController {
 	    model.addAttribute("totalItems", countStudents);
 	    model.addAttribute("startPage", 1);
 	    model.addAttribute("currentPage", page);
-	    model.addAttribute("totalPages", getPageCount(countStudents));
+	    model.addAttribute("totalPages", getPageCount(countStudents)); // дубликат с линии 42
 		
 		return "list-student";
 	}
@@ -59,7 +59,7 @@ public class StudentController {
 	@RequestMapping("search")
 	public String search(Model model, String keyword) {
 		if (keyword.isEmpty()) {
-			return "redirect:/list";
+			return "redirect:/list"; // "redirect:/list" повторяется, можно вынести в переменную
 		} else {
 			model.addAttribute("students", studentService.findByKeyword(keyword));
 		}
