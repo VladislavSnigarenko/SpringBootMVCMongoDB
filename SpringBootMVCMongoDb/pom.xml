@@ -14,6 +14,7 @@
 	<name>SpringBootMVCMongoDb</name>
 	<description>SpringBootMVCMongoDb</description>
 	<properties>
+		<!--советую пробовать java 17-->
 		<java.version>1.8</java.version>
 	</properties>
 	<dependencies>
@@ -28,6 +29,11 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+<!--		Возможно Lombok не работал у из-за того что не было этой библиотеки-->
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
 		</dependency>
 
 		<dependency>

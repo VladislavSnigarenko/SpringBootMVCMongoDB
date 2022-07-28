@@ -1,12 +1,16 @@
 package ua.kiev.snigarenkov.SpringBootMVCMongoDb.models;
 
+import lombok.Data;
+import lombok.ToString;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "students")
+@Data
+@ToString
 public class Student {
 
-	@Id
+	@Id // tip: в mongo primaryKey (_id в mongo), будет именно id даже есть не будет аннотации @Id. @Id обязателен есть id колекции называется по другому (не id)
 	private String id;
 	private String firstName;
 	private String lastName;
@@ -20,36 +24,6 @@ public class Student {
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.eMail = eMail;
-	}
-
-	public String getId() {
-		return id;
-	}
-	public void setId(String id) {
-		this.id = id;
-	}
-	public String getFirstName() {
-		return firstName;
-	}
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
-	public String getLastName() {
-		return lastName;
-	}
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
-	public String geteMail() {
-		return eMail;
-	}
-	public void seteMail(String eMail) {
-		this.eMail = eMail;
-	}
-
-	@Override
-	public String toString() {
-		return "Student [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", eMail=" + eMail + "]";
 	}
 	
 }
