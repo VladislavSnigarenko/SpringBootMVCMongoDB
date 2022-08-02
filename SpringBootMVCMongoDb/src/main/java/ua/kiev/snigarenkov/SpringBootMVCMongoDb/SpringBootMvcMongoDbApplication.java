@@ -28,13 +28,5 @@ public class SpringBootMvcMongoDbApplication implements CommandLineRunner {
 	public void run(String... args) {
 		LOG.info("EXECUTING : command line runner");
 	}
-	
-	@Bean
-	CommandLineRunner init(StudentService studentService){
-		return args -> {
-			LOG.info("EXECUTING : studentService init");
-			studentService.init();
-		};
-	}
 
 }

@@ -1,34 +1,54 @@
 package ua.kiev.snigarenkov.SpringBootMVCMongoDb.services;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.LongStream;
+
+import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import ua.kiev.snigarenkov.SpringBootMVCMongoDb.models.Student;
+import ua.kiev.snigarenkov.SpringBootMVCMongoDb.repository.StudentQuery;
 import ua.kiev.snigarenkov.SpringBootMVCMongoDb.repository.StudentRepository;
 
 @Service
 public class StudentService {
 
-    static final int ROWS_MAX = 100;
+	@Value("${ITEMS_PER_PAGE}")
+	private int itemsPerPage;
+
+	@Value("${ROWS_MAX}")
+	private long rowsMax;
 
 	@Autowired
 	StudentRepository studentRepository;
 
+	@Autowired
+	StudentQuery studentQuery;
+
+	@PostConstruct
 	public void init() {
-		Integer cnt = count().intValue(); 
-		if(cnt < ROWS_MAX) {
-			for (int i = (cnt + 1); i < ROWS_MAX; i++) {
-				Student student = new Student("firstName_" + i, "lastName_" + i, "e" + i + "@.mail");
-				studentRepository.save(student);
-			}	
-		}
+		List<Student> studentList = getStudentToInsert(count(), rowsMax);
+		studentRepository.insert(studentList);
 	}
 	
-	public void save(Student student) {
-		studentRepository.save(student);
+	static  List<Student> getStudentToInsert(long studentInDB, long maxStudents){
+		return LongStream.range(studentInDB, maxStudents + 1).
+				mapToObj(StudentService::createStudent).
+				collect(Collectors.toList());
+	}
+	
+	static Student createStudent(long i) {
+		return new Student("firstName" + i, "lastName_" + i, "e" + i + "@mail");
+	}
+	
+	public Student save(Student student) {
+		return studentRepository.save(student);
 	}
 	
 	public boolean existsById(String id){
@@ -39,8 +59,8 @@ public class StudentService {
 		studentRepository.deleteById(id);
 	}
 	
-	public Student findById(String id){
-		return studentRepository.findById(id).get();
+	public Optional<Student> findById(String id){
+		return studentRepository.findById(id);
 	}
 	
 	public List<Student> findAll(){
@@ -52,11 +72,15 @@ public class StudentService {
 	}
 
 	public List<Student> findByKeyword(String keyword){
-		return studentRepository.findByKeyword(keyword);
-	}
+		return studentQuery.findByKeyword(keyword);
+		}
 	
 	public Long count(){
 		return studentRepository.count();
+	}
+
+	public int getItemsPerPage() {
+		return itemsPerPage;
 	}
 	
 }

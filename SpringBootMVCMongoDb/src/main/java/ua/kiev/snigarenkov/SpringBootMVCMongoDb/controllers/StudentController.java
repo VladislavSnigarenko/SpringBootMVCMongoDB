@@ -18,8 +18,8 @@ import ua.kiev.snigarenkov.SpringBootMVCMongoDb.services.StudentService;
 @Controller
 public class StudentController {
 
-    static int ITEMS_PER_PAGE = 6;
-
+	private String redirectURL = "redirect:/list";
+	
 	@Autowired
 	StudentService studentService;	
 	
@@ -35,11 +35,10 @@ public class StudentController {
 	
 	@RequestMapping("list")
 	public String showAll(@RequestParam(required = false, defaultValue = "1") Integer page, Model model){
-		PageRequest pageRequest = PageRequest.of(page - 1, ITEMS_PER_PAGE, Sort.Direction.ASC, "firstName"); 
+		PageRequest pageRequest = PageRequest.of(page - 1, studentService.getItemsPerPage(), Sort.Direction.ASC, "firstName"); 
 		List<Student> students = studentService.findAll(pageRequest);
 		model.addAttribute("students", students);
 	    Long countStudents = studentService.count();
-        model.addAttribute("totalPages", getPageCount(countStudents));
 
 	    model.addAttribute("onPageItems", students.size());
 	    model.addAttribute("totalItems", countStudents);
@@ -69,16 +68,16 @@ public class StudentController {
 	@PostMapping("save")
 	public String greetingSubmit(Student student, Model model) {
 		studentService.save(student);
-		return "redirect:/list";
+		return redirectURL;
 	}
 
 	@RequestMapping("update/{id}")
 	String update(@PathVariable String id, Model model) {
 		if(studentService.existsById(id)) {
-			model.addAttribute("student", studentService.findById(id));
+			model.addAttribute("student", studentService.findById(id).orElseGet(null));
 			return "add-student";
 		}else {
-			return "redirect:/list";
+			return redirectURL;
 		}
 	}
 
@@ -87,11 +86,11 @@ public class StudentController {
 		if(studentService.existsById(id)) {
 			studentService.deleteById(id);
 		}
-		return "redirect:/list";
+		return redirectURL;
 	}
 
     private long getPageCount(long totalCount) {
-        return (totalCount / ITEMS_PER_PAGE) + ((totalCount % ITEMS_PER_PAGE > 0) ? 1 : 0);
+        return (totalCount / studentService.getItemsPerPage()) + ((totalCount % studentService.getItemsPerPage() > 0) ? 1 : 0);
     }
 	
 }
